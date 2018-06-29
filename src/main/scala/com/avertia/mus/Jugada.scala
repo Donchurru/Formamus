@@ -16,7 +16,16 @@ class Jugada(val cartas: Seq[Carta]) {
    *                 cartas mostradas
    * @return La nueva [[Jugada]]
    */
-  def mus(descarte: Seq[Int]): Jugada = ???
+  def mus(descarte: Seq[Int]): Jugada = {
+    val (descartes, noDescartadas) = cartas.zipWithIndex.partition {
+      case (_,i) => descarte.contains(i+1)
+    }
+
+    val nuevasCartas = Baraja.repartirCartas(descartes.length)
+    Baraja.descartar(descartes.map(_._1))
+
+    new Jugada(noDescartadas.map(_._1) ++ nuevasCartas)
+  }
 
 
   /**
@@ -28,9 +37,12 @@ class Jugada(val cartas: Seq[Carta]) {
    */
   override def toString: String = {
 
-    val cartasString = ???
+    val cartasString = cartas.zipWithIndex.map {
+      case (Carta(carta, palo), index) => s"[${index + 1}] $carta de $palo"
+    }.mkString("\n").concat("\n")
 
-    s"""Cartas del jugador:
+    s"""Cartas en mazo ${Baraja.cuantasQuedan}
+       |Cartas del jugador:
        |********************
        |$cartasString
        |""".stripMargin

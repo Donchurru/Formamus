@@ -49,7 +49,13 @@ object Baraja {
    * @param numero Numero de cartas a repartir
    * @return Seq[[Carta]]
    */
-  def repartirCartas(numero: Int): Seq[Carta] = ???
+  def repartirCartas(numero: Int): Seq[Carta] = {
+    val cartas = mazoActualizado take numero
+    if (cartas.length < numero) volcarDescartesEnMazo
+    val repartidas = cartas ++ (mazoActualizado take (numero - cartas.length))
+    actualizaMazo(repartidas)
+    repartidas
+  }
 
   /**
    * Este método nos sirve para dejar actualizado el mazoActualizado, que sera el actual menos
@@ -59,22 +65,29 @@ object Baraja {
    * @param repartidas Seq[[Carta]] de las cartas repartidas y que hay que quitar del
    *                   mazoActualizado
    */
-  private def actualizaMazo(repartidas: Seq[Carta]): Unit = ???
+  private def actualizaMazo(repartidas: Seq[Carta]): Unit = {
+    mazoActualizado = mazoActualizado diff repartidas
+  }
 
-
-  /**
+ /**
    * Este metodo deja el mazoActualizado con todas las cartas de mazo. Se utilizara solo cuando
    * acaba una partida. Recordad dejar descartes a cero. Actualmente se utiliza en test para
    * dejar la baraja limpia en cada test.
    */
-  def reiniciaMazo: Unit = ???
+  def reiniciaMazo: Unit = {
+    mazoActualizado = Random.shuffle(mazo)
+    descartes = Seq()
+  }
 
   /**
    * Este metodo se utilizará cuando se acaben las cartas del mazoActualizado. En ese momento, se
    * pondran en el mazoActualizado los descartes de los muses que haya habido. Tener en cuenta
    * que los descartes despues de esta acción no existiran
    */
-  def volcarDescartesEnMazo: Unit = ???
+  def volcarDescartesEnMazo: Unit = {
+    mazoActualizado = Random.shuffle(descartes)
+    descartes = Seq()
+  }
 
   /**
    * Con este metodo podremos añadir los descartes de cada mus dado a la variable de descartes.
@@ -84,14 +97,16 @@ object Baraja {
    *
    * @param descarte Seq[[Carta]] a insertar en la variable descartes.
    */
-  def descartar(descarte: Seq[Carta]): Unit = ???
+  def descartar(descarte: Seq[Carta]): Unit = {
+    descartes ++= descarte
+  }
 
   /**
    * Este metodo nos informara del numero de cartas que quedan en el mazoActualizado
    *
    * @return [[Int]] con el numero de cartas del mazoActualizado
    */
-  def cuantasQuedan: Int = ???
+  def cuantasQuedan: Int = mazoActualizado.length
 
   /**
    * Metodo que mete en un String las cartas que quedan en el mazoActualizado
